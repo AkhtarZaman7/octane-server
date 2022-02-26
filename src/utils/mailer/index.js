@@ -1,23 +1,21 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
-
+//TODO:// check if env variables are set
 async function sendMail(to, subject) {
   let transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: process.env.EMAIL, // generated ethereal user
-      pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
-console.log('process.env.EMAIL', process.env.EMAIL)
-  // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: process.env.EMAIL, // sender address
-    to: [process.env.EMAIL], // list of receivers
-    subject: subject, // Subject line
-    text: 'Octane', // plain text body
-    html: '<b>Octane Team?</b>', // html body
+    from: process.env.EMAIL,
+    to: [process.env.EMAIL],
+    subject: subject,
+    text: 'Octane',
+    html: '<b>Octane Team?</b>',
   });
   if (info.messageId) {
     return true;
