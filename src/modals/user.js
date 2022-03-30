@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { default as bcrypt } from 'bcryptjs'
+import { default as bcrypt } from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,22 +20,51 @@ const userSchema = new mongoose.Schema(
         message: ({ value }) => `username ${value} has already been taken`,
       },
     },
-    teamId:{
+    teamId: {
       type: mongoose.Schema.Types.ObjectId,
-      
-    } ,
-    firstName: String,
-    lastName: String,
-    password: String,
-    image: String,
-    jerseyNumber: String,
-    shoots: String,
-    position: String,
-    weight: Number,
-    height: Number,
-    birthDate: String,
-    homeTown: String,
-    image: String,
+    },
+    firstName: {
+      type: String,
+    },
+    lastName: {
+      type: String,
+    },
+    password: {
+      type: String,
+    },
+    image: {
+      type: String,
+    },
+    jerseyNumber: {
+      type: String,
+    },
+    shoots: {
+      type: String,
+    },
+    position: {
+      type: String,
+    },
+    weight: {
+      type: Number,
+    },
+    height: {
+      type: Number,
+    },
+    birthDate: {
+      type: String,
+    },
+    homeTown: {
+      type: String,
+    },
+    image: {
+      type: String,
+    },
+    role: {
+      type: String,
+    },
+    position: {
+      type: String,
+    },
   },
   {
     timestamps: true,

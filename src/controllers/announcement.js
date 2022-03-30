@@ -8,7 +8,7 @@ const AnnouncementController = {
       const reqUser = req.user;
       const validatedAnnouncement = await AnnouncementSchema.validateAsync({
         ...announcement,
-        teamId: reqUser.teamId,
+        teamId: reqUser.teamId.toString(),
       });
       const createdAnnouncement = await Announcement.create(
         validatedAnnouncement
@@ -30,7 +30,7 @@ const AnnouncementController = {
     try {
       const reqUser = req.user;
       const announcements = await Announcement.find({
-        teamId: reqUser.teamId,
+        teamId: reqUser.teamId.toString(),
       });
       res.json({
         message: 'Announcements retrieved successfully',
@@ -52,7 +52,7 @@ const AnnouncementController = {
       const validatedAnnouncement = await AnnouncementSchema.validateAsync({
         title: announcement.title,
         description: announcement.description,
-        teamId: reqUser.teamId,
+        teamId: reqUser.teamId.toString(),
       });
       const updatedAnnouncement = await Announcement.findByIdAndUpdate(
         announcement._id,
@@ -77,7 +77,7 @@ const AnnouncementController = {
     try {
       const announcement = req.body;
       const deletedAnnouncement = await Announcement.findByIdAndDelete(
-        announcement._id
+        announcement._id.toString()
       );
       res.json({
         message: 'Announcement deleted successfully',

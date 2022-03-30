@@ -3,14 +3,16 @@ import TeamSchema from '../joi-schemas/team.js';
 import UserSchema, {
   loginSchema,
   passwordSchema,
+  updateUserSchema,
 } from '../joi-schemas/user.js';
-import { default as bcrypt } from 'bcryptjs'
-
+import { default as bcrypt } from 'bcryptjs';
 
 import Team from '../modals/team.js';
 import User from '../modals/user.js';
-import sendMail from '../utils/mailer/index.js';
+import sendMail, { sendInvitation } from '../utils/mailer/index.js';
 import { v4 as uuid } from 'uuid';
+import InviteUserSchema from '../joi-schemas/invite-users.js';
+import InviteUsers from '../modals/user-invitation.js';
 
 const userController = {
   login: async function (req, res) {
@@ -20,6 +22,7 @@ const userController = {
       if (!user) {
         throw new Error('User not found');
       }
+      const team = await Team.findOne({ _id: user.teamId.toString() });
       const isMatch = await user.matchesPassword(req.body.password);
       if (!isMatch) {
         throw new Error('Incorrect password');
@@ -29,6 +32,7 @@ const userController = {
         email: user.email,
         username: user.username,
         teamId: user.teamId,
+        team: team,
       };
 
       const accessToken = generateAccessToken(accessTokenData);
@@ -36,6 +40,33 @@ const userController = {
     } catch (error) {
       res.json({
         message: 'Login failed',
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+  updateUser: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      const user = req.body;
+      console.log('user', user);
+      const validatedUser = await updateUserSchema.validateAsync({
+        ...user,
+        teamId: reqUser.teamId.toString(),
+      });
+      const updatedUser = await User.findByIdAndUpdate(
+        reqUser._id,
+        validatedUser,
+        { new: true }
+      );
+      res.json({
+        message: 'User updated successfully',
+        user: updatedUser,
+        success: true,
+      });
+    } catch (error) {
+      res.json({
+        message: 'User update failed',
         error: error.message,
         success: false,
       });
@@ -54,11 +85,22 @@ const userController = {
         const registeredUser = await User.create({
           ...userValues,
           teamId: teamId,
+          role: 'coach',
+          position: 'forward',
         });
+        const accessTokenData = {
+          userId: registeredUser._id,
+          email: registeredUser.email,
+          username: registeredUser.username,
+          teamId: registeredUser.teamId,
+        };
+
+        const accessToken = generateAccessToken(accessTokenData);
         res.json({
           message: 'User registered successfully',
           user: registeredUser,
           team: registeredTeam,
+          accessToken,
           success: true,
         });
       } else {
@@ -67,13 +109,26 @@ const userController = {
         }
         const registeredUser = await User.create({
           ...userValues,
+          teamId: user.teamId,
+          role: 'player',
+          position: 'forward',
         });
+
         const team = await Team.findById(user.teamId);
         if (team) {
+          const accessTokenData = {
+            userId: registeredUser._id,
+            email: registeredUser.email,
+            username: registeredUser.username,
+            teamId: registeredUser.teamId,
+          };
+
+          const accessToken = generateAccessToken(accessTokenData);
           res.json({
             message: 'User registered successfully',
             user: registeredUser,
             team: team,
+            accessToken,
             success: true,
           });
         } else {
@@ -90,8 +145,8 @@ const userController = {
   },
   invite: async function (req, res) {
     const reqUser = req.user;
-    const user = await User.findById(reqUser.userId);
-    const team = await Team.findById(user.teamId);
+    const user = await User.findById(reqUser.userId.toString());
+    const team = await Team.findById(user.teamId.toString());
     const response = sendMail(
       'azcodes12@gmail.com',
       ` ${user.username} has invited you to join their team ${team.teamName}`
@@ -135,7 +190,7 @@ const userController = {
       const email = req.body.email;
       const password = req.body.password;
       const userValues = await passwordSchema.validateAsync({ password });
-      const encPassword= await bcrypt.hash(userValues.password, 10);
+      const encPassword = await bcrypt.hash(userValues.password, 10);
       const response = await User.findOneAndUpdate(
         { email: email },
         { password: encPassword }
@@ -154,6 +209,99 @@ const userController = {
     } catch (error) {
       res.json({
         message: error.message,
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+  inviteUsers: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      const user = await User.findById(reqUser._id);
+      const team = await Team.findById(user.teamId.toString());
+
+      const users = req.body.users;
+      const validatedUsers = await users.map(async (item) => {
+        const token = uuid().slice(0, 6).toLocaleUpperCase();
+        return await InviteUserSchema.validateAsync({
+          ...item,
+          teamId: user.teamId.toString(),
+          token,
+        });
+      });
+      const registeredUsers = await Promise.all(validatedUsers);
+      const responses = await registeredUsers.map(async (validatedUser) => {
+        const existingUser = await User.findOne({ email: validatedUser.email });
+        if (existingUser) {
+          throw new Error(
+            `User with email ${validatedUser.email} already exists`
+          );
+        }
+        const response = await sendInvitation(
+          validatedUser.email,
+          team.teamName,
+          validatedUser.token
+        );
+        if (response) {
+          await InviteUsers.create(validatedUser);
+        }
+        return response;
+      });
+      const successResponses = await Promise.all(responses);
+      res.json({
+        message: 'Invitation sent successfully',
+        success: true,
+      });
+    } catch (error) {
+      res.json({
+        error: 'Invitation failed',
+        message: error.message,
+        success: false,
+      });
+    }
+  },
+  userInvitation: async function (req, res) {
+    try {
+      const response = await InviteUsers.findOne({ token: req.body.code });
+      if (response) {
+        res.json({
+          message: 'Invitation sent successfully',
+          users: response,
+          success: true,
+        });
+      } else {
+        res.json({
+          message: 'Invitation does not exist',
+          success: false,
+        });
+      }
+    } catch (error) {
+      res.json({
+        message: 'Invitation failed',
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+  deleteUser: async function (req, res) {
+    try {
+      const response = await User.findOneAndDelete({
+        _id: req.body.id.toString(),
+      });
+      if (response) {
+        res.json({
+          message: 'User deleted successfully',
+          success: true,
+        });
+      } else {
+        res.json({
+          message: 'User not found',
+          success: false,
+        });
+      }
+    } catch (error) {
+      res.json({
+        message: 'User deletion failed',
         error: error.message,
         success: false,
       });

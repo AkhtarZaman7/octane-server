@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import User from '../modals/user.js';
 
 dotenv.config();
 
@@ -8,10 +9,18 @@ function authenticate(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
   if (token == null)
     res.status(401).json({ message: 'auth token not found', success: false });
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err)
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
+    if (err) {
       return res.status(403).json({ message: 'invalid token', success: false });
-    req.user = user;
+    }
+
+    const { email } = user;
+    const userData = await User.findOne({ email: email });
+
+    if (!userData) {
+      return res.status(403).json({ message: 'invalid token', success: false });
+    }
+    req.user = userData;
     next();
   });
 }
