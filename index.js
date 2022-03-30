@@ -56,19 +56,19 @@ const PORT = process.env.PORT || 4000;
   // const url = 'mongodb://127.0.0.1:27017/octane';
 
   try {
-    const response = await mongoose.connect(url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverApi: ServerApiVersion.v1,
-    });
-    const db = mongoose.connection;
-    db.once('open', (_) => {
-      console.log('Database connected:', url);
-    });
+    // const response = await mongoose.connect(url, {
+    //   useNewUrlParser: true,
+    //   useUnifiedTopology: true,
+    //   serverApi: ServerApiVersion.v1,
+    // });
+    // const db = mongoose.connection;
+    // db.once('open', (_) => {
+    //   console.log('Database connected:', url);
+    // });
 
-    db.on('error', (err) => {
-      console.error('connection error:', err);
-    });
+    // db.on('error', (err) => {
+    //   console.error('connection error:', err);
+    // });
     app.listen({ port: PORT }, () =>
       console.log(`🚀 Server ready at http://localhost:${PORT} 🚀`)
     );
