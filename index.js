@@ -8,6 +8,8 @@ import { MongoClient, ServerApiVersion } from 'mongodb';
 import teamController from './src/controllers/team-controller.js';
 import AnnouncementController from './src/controllers/announcement.js';
 import ScheduleGamesController from './src/controllers/scheduled-games.js';
+import sgMail from '@sendgrid/mail'
+sgMail.setApiKey('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')
 
 dotenv.config({ path: './config.env' });
 const app = express();
@@ -21,6 +23,8 @@ app.post('/update-user',authenticate, userController.updateUser);
 app.post('/invite-user', authenticate, userController.invite);
 app.post('/team', authenticate, teamController.getTeam);
 app.post('/team-info', authenticate, teamController.getTeamInfo);
+app.post('/update-team-info', authenticate, teamController.updateTeamInfo);
+
 
 app.post('/request-reset-password', userController.requestResetPassword);
 app.post('/reset-password', userController.resetPassword);
@@ -28,6 +32,11 @@ app.post(
   '/create-announcement',
   authenticate,
   AnnouncementController.createAnnouncement
+);
+app.post(
+  '/notifications',
+  authenticate,
+  AnnouncementController.getNotifications
 );
 app.post(
   '/get-announcements',
@@ -46,6 +55,9 @@ app.post(
 );
 app.post('/schedule-game', authenticate, ScheduleGamesController.scheduleGame);
 app.post('/scheduled-game', authenticate, ScheduleGamesController.getGames);
+app.post('/update-game-status', authenticate, ScheduleGamesController.UpdateGameStatus);
+app.post('/update-game-users', authenticate, ScheduleGamesController.updateGameUsers);
+
 app.post('/invite-users', authenticate, userController.inviteUsers);
 app.post('/user-invitation', userController.userInvitation);
 app.post('/delete-user', authenticate, userController.deleteUser);

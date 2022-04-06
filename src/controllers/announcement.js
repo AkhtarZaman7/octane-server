@@ -1,5 +1,6 @@
 import AnnouncementSchema from '../joi-schemas/announcement.js';
 import Announcement from '../modals/announcement.js';
+import Notification from "../modals/notifications.js";
 
 const AnnouncementController = {
   createAnnouncement: async function (req, res) {
@@ -10,6 +11,10 @@ const AnnouncementController = {
         ...announcement,
         teamId: reqUser.teamId.toString(),
       });
+      await Notification.create({
+        teamId: reqUser.teamId.toString(),
+        message: `A new Announcement has been posted`,
+      })
       const createdAnnouncement = await Announcement.create(
         validatedAnnouncement
       );
@@ -59,7 +64,10 @@ const AnnouncementController = {
         validatedAnnouncement,
         { new: true }
       );
-      console.log('updatedAnnouncement', updatedAnnouncement)
+      await Notification.create({
+        teamId: reqUser.teamId.toString(),
+        message: `A Announcement has been updated`,
+      })
       res.json({
         message: 'Announcement updated successfully',
         announcement: updatedAnnouncement,
@@ -87,6 +95,25 @@ const AnnouncementController = {
     } catch (error) {
       res.json({
         message: 'Announcement deletion failed',
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+  getNotifications: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      const notifications = await Notification.find({
+        teamId: reqUser.teamId.toString(),
+      });
+      res.json({
+        message: 'Notifications retrieved successfully',
+        notifications,
+        success: true,
+      });
+    } catch (error) {
+      res.json({
+        message: 'Notifications retrieval failed',
         error: error.message,
         success: false,
       });

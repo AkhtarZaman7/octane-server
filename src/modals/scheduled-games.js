@@ -27,11 +27,14 @@ const ScheduledGamesSchema = new mongoose.Schema(
       type: Number,
     },
     status: {
-      type: String,
+      type: Boolean,
     },
     teamId: {
       type: String,
     },
+    usersNotAttending:{
+      type: Array,
+    }
   },
   {
     timestamps: true,

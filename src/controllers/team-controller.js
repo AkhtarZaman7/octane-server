@@ -22,6 +22,12 @@ const teamController = {
       success: true,
     });
   },
+
+  updateTeamInfo: async function (req, res) {
+    const reqUser = req.user;
+    const team = await Team.findByIdAndUpdate({ _id: reqUser.teamId.toString() }, req.body);
+    res.json({ message: 'Team updated successfully', success:true,team });
+  },
 };
 
 export default teamController;

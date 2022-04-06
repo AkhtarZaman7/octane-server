@@ -1,4 +1,5 @@
 import ScheduledGamesSchema from '../joi-schemas/scheduled-games.js';
+import Notification from '../modals/notifications.js';
 import ScheduledGames from '../modals/scheduled-games.js';
 
 const ScheduleGamesController = {
@@ -13,9 +14,15 @@ const ScheduleGamesController = {
       const validatedGame = await ScheduledGamesSchema.validateAsync(
         gameValues
       );
+      await Notification.create({
+        message: `A new ${
+          game.type === 'Game' ? 'Game' : 'Practice'
+        } has been scheduled`,
+      });
       const registeredGame = await ScheduledGames.create({
         ...validatedGame,
-        status: 'valid',
+        status: false,
+        usersNotAttending: [],
       });
 
       res.json({
@@ -46,6 +53,86 @@ const ScheduleGamesController = {
     } catch (error) {
       res.json({
         error: 'Failed to fetch game',
+        message: error.message,
+        success: false,
+      });
+    }
+  },
+  UpdateGameStatus: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      const gameId = req.body.gameId.toString();
+      const gameStatus = req.body.gameStatus;
+      const game = await ScheduledGames.findOne({
+        _id: gameId,
+        team: reqUser.teamId,
+      });
+      if (gameStatus) {
+        await Notification.create({
+          teamId: reqUser.teamId.toString(),
+          message: `A ${
+            game.type === 'Game' ? 'Game' : 'Practice'
+          } has been cancelled`,
+        });
+      }
+      if (game) {
+        game.status = gameStatus;
+        await game.save();
+        res.json({
+          message: 'Game status updated successfully',
+          success: true,
+          status: gameStatus,
+        });
+      } else {
+        res.json({
+          error: 'Game not found',
+          message: 'Game not found',
+          success: false,
+        });
+      }
+    } catch (error) {
+      res.json({
+        error: 'Failed to update game status',
+        message: error.message,
+        success: false,
+      });
+    }
+  },
+  updateGameUsers: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      const gameId = req.body.gameId.toString();
+      const gameUsers = req.body.gameUsers;
+      const game = await ScheduledGames.findOne({
+        _id: gameId,
+      });
+      if (game) {
+        await Notification.create({
+          teamId: reqUser.teamId.toString(),
+          message: `A Player has marked himself ${
+            game.usersNotAttending.length < gameUsers.length
+              ? 'Available'
+              : 'Un available'
+          } for a game`,
+        });
+        game.usersNotAttending = gameUsers;
+        await game.save();
+
+        res.json({
+          message: 'Game users updated successfully',
+          success: true,
+          usersNotAttending: gameUsers,
+        });
+      } else {
+        res.json({
+          error: 'Game not found',
+          message: 'Game not found',
+          success: false,
+        });
+      }
+    } catch (error) {
+      res.json({
+        error: 'Failed to update game users',
         message: error.message,
         success: false,
       });

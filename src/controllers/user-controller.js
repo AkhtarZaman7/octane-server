@@ -49,7 +49,6 @@ const userController = {
     try {
       const reqUser = req.user;
       const user = req.body;
-      console.log('user', user);
       const validatedUser = await updateUserSchema.validateAsync({
         ...user,
         teamId: reqUser.teamId.toString(),
@@ -113,6 +112,10 @@ const userController = {
           role: 'player',
           position: 'forward',
         });
+        await Notification.create({
+          teamId: user.teamId.toString(),
+          message: `A new player has joined your team - head over to the team chat to welcome them!`,
+        })
 
         const team = await Team.findById(user.teamId);
         if (team) {

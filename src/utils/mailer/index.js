@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import sgMail from '@sendgrid/mail'
 dotenv.config();
 //TODO:// check if env variables are set
 async function sendMail(to, subject) {
@@ -27,6 +28,21 @@ async function sendMail(to, subject) {
   }
 }
 const sendInvitation = async (email, teamName, code) => {
+  const msg = {
+    to: email, // Change to your recipient
+    from: 'akhtar.tarar12@icloud.com', // Change to your verified sender
+    subject: 'Sending with SendGrid is Fun',
+    text: 'and easy to do anywhere, even with Node.js',
+    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  };
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log('Email sent');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   try {
     let transporter = nodemailer.createTransport({
       service: 'Gmail',
@@ -106,13 +122,13 @@ const sendInvitation = async (email, teamName, code) => {
         </div>
       `,
     });
-    console.log('info', info)
+    console.log('info', info);
     if (info.messageId) {
       return true;
     }
     return false;
   } catch (error) {
-    console.log('error', error)
+    console.log('error', error);
     return false;
   }
 };
