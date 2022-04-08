@@ -41,7 +41,7 @@ const ScheduleGamesController = {
   getGames: async function (req, res) {
     try {
       const reqUser = req.user;
-      const games = await ScheduledGames.find({ team: reqUser.teamId });
+      const games = await ScheduledGames.find({ teamId: reqUser.teamId });
       const sortedGames = games.sort(function (a, b) {
         return new Date(b.date) - new Date(a.date);
       });
