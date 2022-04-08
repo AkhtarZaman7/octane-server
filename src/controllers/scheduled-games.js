@@ -38,6 +38,50 @@ const ScheduleGamesController = {
       });
     }
   },
+  editGame: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      const game = req.body;
+      const {  location,
+        locationAddress,
+        opponent,
+        time,
+        date,
+        timeZoneName,
+        timeZoneOffset,
+        type} = game;
+      const gameValues = {
+        location,
+        locationAddress,
+        opponent,
+        time,
+        date,
+        timeZoneName,
+        timeZoneOffset,
+        type,
+        teamId: reqUser.teamId.toString(),
+      };
+      const validatedGame = await ScheduledGamesSchema.validateAsync(
+        gameValues
+      );
+      const updatedGame = await ScheduledGames.findByIdAndUpdate(
+        game.id,
+        validatedGame,
+        { new: true }
+      );
+      res.json({
+        message: 'Game updated successfully',
+        game: updatedGame,
+        success: true,
+      });
+    } catch (error) {
+      res.json({
+        error: 'Game update failed',
+        message: error.message,
+        success: false,
+      });
+    }
+  },
   getGames: async function (req, res) {
     try {
       const reqUser = req.user;

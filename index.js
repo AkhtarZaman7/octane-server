@@ -55,6 +55,8 @@ app.post(
 );
 app.post('/schedule-game', authenticate, ScheduleGamesController.scheduleGame);
 app.post('/scheduled-game', authenticate, ScheduleGamesController.getGames);
+app.post('/edit-game', authenticate, ScheduleGamesController.editGame);
+
 app.post('/update-game-status', authenticate, ScheduleGamesController.UpdateGameStatus);
 app.post('/update-game-users', authenticate, ScheduleGamesController.updateGameUsers);
 
