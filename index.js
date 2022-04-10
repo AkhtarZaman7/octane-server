@@ -9,11 +9,17 @@ import teamController from './src/controllers/team-controller.js';
 import AnnouncementController from './src/controllers/announcement.js';
 import ScheduleGamesController from './src/controllers/scheduled-games.js';
 import sgMail from '@sendgrid/mail'
+import cors from 'cors'
+
 sgMail.setApiKey('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')
 
 dotenv.config({ path: './config.env' });
 const app = express();
-
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+}))
 app.use(express.json());
 app.disable('x-powered-by');
 
