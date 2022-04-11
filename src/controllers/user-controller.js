@@ -40,7 +40,7 @@ const userController = {
       };
 
       const accessToken = generateAccessToken(accessTokenData);
-      res.json({ user: user, accessToken, success: true });
+      res.json({ user: user, accessToken, success: true ,team});
     } catch (error) {
       res.json({
         message: 'Login failed',
@@ -58,7 +58,7 @@ const userController = {
         teamId: reqUser.teamId.toString(),
       });
       const updatedUser = await User.findByIdAndUpdate(
-        reqUser._id,
+        user._id,
         validatedUser,
         { new: true }
       );

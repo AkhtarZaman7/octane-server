@@ -9,9 +9,7 @@ const ScheduledGamesSchema = Joi.object({
     .required()
     .messages({'string.base': 'offset Required'}),
   location: Joi.string().required().messages({'string.base': 'Location Required'}),
-  locationAddress: Joi.string()
-    .required()
-    .messages({'string.base': 'Location address Required'}),
+  locationAddress: Joi.string().allow(''),
   teamId: Joi.string().required().messages({'string.base': 'Team Reference Required'}),
   usersNotAttending: Joi.array().items(Joi.string()),
 });
