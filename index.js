@@ -10,6 +10,7 @@ import AnnouncementController from './src/controllers/announcement.js';
 import ScheduleGamesController from './src/controllers/scheduled-games.js';
 import sgMail from '@sendgrid/mail';
 import cors from 'cors';
+import notificationController from "./src/controllers/notifications.js";
 
 sgMail.setApiKey(
   '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'
@@ -45,6 +46,11 @@ app.post(
   '/notifications',
   authenticate,
   AnnouncementController.getNotifications
+);
+app.post(
+  '/delete-notification',
+  authenticate,
+  notificationController.deleteNotification
 );
 app.post(
   '/get-announcements',

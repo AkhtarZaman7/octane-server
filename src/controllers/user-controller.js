@@ -13,14 +13,18 @@ import sendMail, { sendInvitation } from '../utils/mailer/index.js';
 import { v4 as uuid } from 'uuid';
 import InviteUserSchema from '../joi-schemas/invite-users.js';
 import InviteUsers from '../modals/user-invitation.js';
+import Notification from "../modals/notifications.js";
 
 const userController = {
   login: async function (req, res) {
     try {
-      await loginSchema.validateAsync(req.body);
-      const user = await User.findOne({ email: req.body.email });
+      // await loginSchema.validateAsync(req.body);
+      let user = await User.findOne({ email: req.body.email });
+      if(!user) {
+        user = await User.findOne({ username: req.body.email });
+      }
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('email or username is invalid');
       }
       const team = await Team.findOne({ _id: user.teamId.toString() });
       const isMatch = await user.matchesPassword(req.body.password);
