@@ -5,7 +5,7 @@ const TeamSchema = Joi.object({
     .max(50)
     .min(4)
     .message('Team name must be between 4 and 50 characters'),
-  leagueName: Joi.string(),
+  leagueName: Joi.string().allow(''),
   teamLogo: Joi.string().required().messages({
       'string.base':'Team logo is required'
     }),
