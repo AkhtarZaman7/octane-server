@@ -117,6 +117,7 @@ const userController = {
           position: 'forward',
         });
         await Notification.create({
+          userId:user?._id,
           teamId: user.teamId.toString(),
           message: `A new player has joined your team - head over to the team chat to welcome them!`,
         })
