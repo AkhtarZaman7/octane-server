@@ -65,6 +65,9 @@ const userSchema = new mongoose.Schema(
     position: {
       type: String,
     },
+    firebaseToken:{
+      type: String,
+    }
   },
   {
     timestamps: true,

@@ -13,14 +13,18 @@ import sendMail, { sendInvitation } from '../utils/mailer/index.js';
 import { v4 as uuid } from 'uuid';
 import InviteUserSchema from '../joi-schemas/invite-users.js';
 import InviteUsers from '../modals/user-invitation.js';
-import Notification from "../modals/notifications.js";
+import Notification from '../modals/notifications.js';
+import {
+  sendPushChatNotification,
+  sendPushNotification,
+} from '../firebase/index.js';
 
 const userController = {
   login: async function (req, res) {
     try {
       // await loginSchema.validateAsync(req.body);
       let user = await User.findOne({ email: req.body.email });
-      if(!user) {
+      if (!user) {
         user = await User.findOne({ username: req.body.email });
       }
       if (!user) {
@@ -40,7 +44,7 @@ const userController = {
       };
 
       const accessToken = generateAccessToken(accessTokenData);
-      res.json({ user: user, accessToken, success: true ,team});
+      res.json({ user: user, accessToken, success: true, team });
     } catch (error) {
       res.json({
         message: 'Login failed',
@@ -117,11 +121,14 @@ const userController = {
           position: 'forward',
         });
         await Notification.create({
-          userId:user?._id,
+          userId: user?._id,
           teamId: user.teamId.toString(),
           message: `A new player has joined your team - head over to the team chat to welcome them!`,
-        })
-
+        });
+        sendPushNotification(
+          `A Announcement has been updated`,
+          user.teamId.toString()
+        );
         const team = await Team.findById(user.teamId);
         if (team) {
           const accessTokenData = {
@@ -310,6 +317,88 @@ const userController = {
     } catch (error) {
       res.json({
         message: 'User deletion failed',
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+
+  updateFirebaseToken: async function (req, res) {
+    try {
+      const reqUser = req.user;
+
+      const response = await User.findOneAndUpdate(
+        { _id: reqUser._id.toString() },
+        { firebaseToken: req.body.firebaseToken }
+      );
+      if (response) {
+        res.json({
+          message: 'Firebase token updated successfully',
+          success: true,
+        });
+      } else {
+        res.json({
+          message: 'User not found',
+          success: false,
+        });
+      }
+    } catch (error) {
+      res.json({
+        message: 'Firebase token update failed',
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+  sendChatNotification: async function (req, res) {
+    try {
+      if(req.body.message && req.body.id){
+        const userToSend= await User.findById(req.body.id.toString());
+        const response = sendPushChatNotification(
+          req.body.message,
+          userToSend.firebaseToken
+        );
+        res.json({
+          message: 'Notification sent successfully',
+          success: true,
+        });
+      }else{
+        res.json({
+          message: 'Notification failed',
+          success: false,
+        });
+      }
+     
+    } catch (error) {
+      res.json({
+        message: 'Notification failed',
+        error: error.message,
+        success: false,
+      });
+    }
+  },
+
+  sendTeamChat: async function (req, res) {
+    try {
+      const reqUser = req.user;
+      
+      const users = await User.find({ teamId: reqUser.teamId.toString() });
+      const responses = await users.map(async (user) => {
+        const response = sendPushChatNotification(
+          req.body.message,
+          user.firebaseToken
+        );
+        return response;
+      });
+      const successResponses = await Promise.all(responses);
+      res.json({
+        message: 'Notification sent successfully',
+        success: true,
+      });
+     
+    } catch (error) {
+      res.json({
+        message: 'Notification failed',
         error: error.message,
         success: false,
       });

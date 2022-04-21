@@ -11,6 +11,12 @@ import ScheduleGamesController from './src/controllers/scheduled-games.js';
 import sgMail from '@sendgrid/mail';
 import cors from 'cors';
 import notificationController from "./src/controllers/notifications.js";
+import {firebaseConfig} from './src/firebase/config.js';
+import { initializeApp } from 'firebase-admin/app';
+import admin from 'firebase-admin';
+initializeApp({
+  credential: admin.credential.cert(firebaseConfig),
+});
 
 sgMail.setApiKey(
   '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'
@@ -31,6 +37,12 @@ app.post('/login', userController.login);
 app.post('/register-user', userController.register);
 app.post('/update-user', authenticate, userController.updateUser);
 app.post('/invite-user', authenticate, userController.invite);
+app.post('/update-firebase-token', authenticate, userController.updateFirebaseToken);
+app.post('/send-chat', authenticate, userController.sendChatNotification);
+app.post('/send-team-chat', authenticate, userController.sendTeamChat);
+
+
+
 app.post('/team', authenticate, teamController.getTeam);
 app.post('/team-info', authenticate, teamController.getTeamInfo);
 app.post('/update-team-info', authenticate, teamController.updateTeamInfo);

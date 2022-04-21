@@ -1,3 +1,4 @@
+import { sendPushNotification } from "../firebase/index.js";
 import ScheduledGamesSchema from '../joi-schemas/scheduled-games.js';
 import Notification from '../modals/notifications.js';
 import ScheduledGames from '../modals/scheduled-games.js';
@@ -6,6 +7,10 @@ const ScheduleGamesController = {
   scheduleGame: async function (req, res) {
     try {
       const reqUser = req.user;
+      sendPushNotification(
+        'A new event has been scheduled',
+        reqUser.teamId.toString()
+      );
       const game = req.body;
       const gameValues = {
         ...game,
@@ -41,6 +46,7 @@ const ScheduleGamesController = {
   editGame: async function (req, res) {
     try {
       const reqUser = req.user;
+
       const game = req.body;
       const {  location,
         locationAddress,
@@ -118,6 +124,12 @@ const ScheduleGamesController = {
             game.type === 'Game' ? 'Game' : 'Practice'
           } has been cancelled`,
         });
+        sendPushNotification(
+          `A ${
+            game.type === 'Game' ? 'Game' : 'Practice'
+          } has been cancelled`,
+          reqUser.teamId.toString()
+        );
       }
       if (game) {
         game.status = gameStatus;
@@ -159,6 +171,16 @@ const ScheduleGamesController = {
               : 'Un available'
           } for a game`,
         });
+
+        sendPushNotification(
+          `A Player has marked himself ${
+            game.usersNotAttending.length < gameUsers.length
+              ? 'Available'
+              : 'Un available'
+          } for a game`,
+          reqUser.teamId.toString()
+        );
+
         game.usersNotAttending = gameUsers;
         await game.save();
 

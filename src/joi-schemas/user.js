@@ -69,6 +69,7 @@ const updateUserSchema = Joi.object({
   birthDate: Joi.string(),
   homeTown: Joi.string(),
   image: Joi.string(),
+  firebaseToken: Joi.string().allow(''),
 });
 
 const loginSchema = Joi.object({

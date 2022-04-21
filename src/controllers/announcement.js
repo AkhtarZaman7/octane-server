@@ -1,12 +1,18 @@
+import { sendPushNotification } from '../firebase/index.js';
 import AnnouncementSchema from '../joi-schemas/announcement.js';
 import Announcement from '../modals/announcement.js';
-import Notification from "../modals/notifications.js";
+import Notification from '../modals/notifications.js';
 
 const AnnouncementController = {
   createAnnouncement: async function (req, res) {
+    const reqUser = req.user;
+    sendPushNotification(
+      'A new Announcement has been posted',
+      reqUser.teamId.toString()
+    );
     try {
       const announcement = req.body;
-      const reqUser = req.user;
+      
       const validatedAnnouncement = await AnnouncementSchema.validateAsync({
         ...announcement,
         teamId: reqUser.teamId.toString(),
@@ -14,7 +20,7 @@ const AnnouncementController = {
       await Notification.create({
         teamId: reqUser.teamId.toString(),
         message: `A new Announcement has been posted`,
-      })
+      });
       const createdAnnouncement = await Announcement.create(
         validatedAnnouncement
       );
@@ -32,8 +38,8 @@ const AnnouncementController = {
     }
   },
   getAnnouncements: async function (req, res) {
+    const reqUser = req.user;
     try {
-      const reqUser = req.user;
       const announcements = await Announcement.find({
         teamId: reqUser.teamId.toString(),
       });
@@ -67,7 +73,11 @@ const AnnouncementController = {
       await Notification.create({
         teamId: reqUser.teamId.toString(),
         message: `A Announcement has been updated`,
-      })
+      });
+      sendPushNotification(
+        `A Announcement has been updated`,
+        reqUser.teamId.toString()
+      );
       res.json({
         message: 'Announcement updated successfully',
         announcement: updatedAnnouncement,
@@ -118,8 +128,7 @@ const AnnouncementController = {
         success: false,
       });
     }
-  }
-  
+  },
 };
 
 export default AnnouncementController;
