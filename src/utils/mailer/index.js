@@ -57,7 +57,8 @@ const sendInvitation = async (email, teamName, code) => {
       subject: 'You have been invited to join a team',
       text: 'Octane',
       html: `
-      <div style="height: 100vh; width: 70%; padding: 5%">
+      <div style="margin: 0; padding: 0">
+    <div style="height: 100vh; width: 70%; padding: 5%">
       <p
         style="
           font-size: 32px;
@@ -196,6 +197,7 @@ const sendInvitation = async (email, teamName, code) => {
         </div>
       </div>
     </div>
+  </div>
       `,
     });
     console.log('info', info);
