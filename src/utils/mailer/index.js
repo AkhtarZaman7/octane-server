@@ -56,9 +56,7 @@ const sendInvitation = async (email, teamName, code) => {
       to: [email],
       subject: 'You have been invited to join a team',
       text: 'Octane',
-      html: `
-      <div style="margin: 0; padding: 0">
-    <div style="height: 100vh; width: 70%; padding: 5%">
+      html: `  <div style="border:30px solid #07243e; padding: 5%">
       <p
         style="
           font-size: 32px;
@@ -123,82 +121,82 @@ const sendInvitation = async (email, teamName, code) => {
         upcoming events and manage your health reports to stay safe and
         protected while having fun. Join and spread the word today!
       </p>
-      <div style="display: flex; flex-direction: column; align-items: center">
-        <p style="color: grey; text-align: center; margin-top: 100px">
-          You've been added to ${teamName} and may receive ongoing notifications
-          after signing up and registering for Octane. You may adjust
-          notifications on your personal mobile device directly.
-        </p>
-        <p style="color: grey">Octane Tech - Toronto, ON, CANADA</p>
-        <p style="color: grey">
-          Octane Tech is private held by ALM Inc.| Privacy Policy | Terms &
-          Conditions
-        </p>
+   
+      <p style="color: grey; text-align: center; margin-top: 100px; text-align: center;">
+        You've been added to ${teamName} and may receive ongoing notifications
+        after signing up and registering for Octane. You may adjust
+        notifications on your personal mobile device directly.
+      </p>
+      <p style="color: grey; text-align: center;">Octane Tech - Toronto, ON, CANADA</p>
+      <p style="color: grey; text-align: center;">
+        Octane Tech is private held by ALM Inc.| Privacy Policy | Terms &
+        Conditions
+      </p>
 
-        <p style="font-weight: bold">
-          VISIT US ON YOUR FAVORITE SOCIAL MEDIA CHANNEL
-        </p>
-        <div
-          style="
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-          "
-        >
-          <a href="https://www.facebook.com/Octane-Tech-104035735576947/">
-            <img
-              style="height: 50px; width: 50px"
-              src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/fb1.png?alt=media&token=fb669f8b-cf10-48a0-bb1b-2b2046994d17"
-              alt="facebook"
-            />
-          </a>
-          <a href="https://www.instagram.com/octane.technology/">
-            <img
-              style="height: 50px; width: 50px"
-              src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/insta.png?alt=media&token=adbf8dd7-5853-457c-950d-82a0279eb96a"
-              alt="instagram"
-            />
-          </a>
-          <a href="https://www.tiktok.com/@octanetech">
-            <img
-              style="height: 50px; width: 50px"
-              src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/tiktok.png?alt=media&token=261fbdeb-ef0c-4ed5-a1bc-df680ef939b5"
-              alt="tiktok"
-            />
-          </a>
-          <a href="https://twitter.com/OctaneTech1">
-            <img
-              style="height: 50px; width: 50px"
-              src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/tw1.png?alt=media&token=fb2e57ea-119e-4e9b-bca7-20ec23931e56"
-              alt="twitter"
-            />
-          </a>
-        </div>
-        <p>DOWNLOAD TODAY!</p>
-        <div
-          style="
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-          "
-        >
+      <p style="font-weight: bold; text-align: center;">
+        VISIT US ON YOUR FAVORITE SOCIAL MEDIA CHANNEL
+      </p>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        "
+      >
+        <a href="https://www.facebook.com/Octane-Tech-104035735576947/">
           <img
-            style="height: 120px; width: 200px; resize: vertical"
-            src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/appstore.png?alt=media&token=e2a2ecf6-b383-4ccb-881f-027ca8412240"
-            alt="apple store"
+            style="height: 50px; width: 50px"
+            src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/fb1.png?alt=media&token=fb669f8b-cf10-48a0-bb1b-2b2046994d17"
+            alt="facebook"
           />
+        </a>
+        <a href="https://www.instagram.com/octane.technology/">
           <img
-            style="height: 100px; width: 200px"
-            src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/playstore.png?alt=media&token=bb00de20-9e04-4909-a3a8-d58c50486363"
-            alt="playstore"
+            style="height: 50px; width: 50px"
+            src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/insta.png?alt=media&token=adbf8dd7-5853-457c-950d-82a0279eb96a"
+            alt="instagram"
           />
-        </div>
+        </a>
+        <a href="https://www.tiktok.com/@octanetech">
+          <img
+            style="height: 50px; width: 50px"
+            src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/tiktok.png?alt=media&token=261fbdeb-ef0c-4ed5-a1bc-df680ef939b5"
+            alt="tiktok"
+          />
+        </a>
+        <a href="https://twitter.com/OctaneTech1">
+          <img
+            style="height: 50px; width: 50px"
+            src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/tw1.png?alt=media&token=fb2e57ea-119e-4e9b-bca7-20ec23931e56"
+            alt="twitter"
+          />
+        </a>
       </div>
-    </div>
-  </div>
-      `,
+      <p style="text-align: center;">DOWNLOAD TODAY!</p>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        "
+      >
+        <img
+          style="height: 120px; width: 200px; resize: vertical"
+          src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/appstore.png?alt=media&token=e2a2ecf6-b383-4ccb-881f-027ca8412240"
+          alt="apple store"
+        />
+        <img
+          style="height: 100px; width: 200px"
+          src="https://firebasestorage.googleapis.com/v0/b/octane-a916b.appspot.com/o/playstore.png?alt=media&token=bb00de20-9e04-4909-a3a8-d58c50486363"
+          alt="playstore"
+        />
+      </div>
+    
+    </div>`,
     });
     console.log('info', info);
     if (info.messageId) {
