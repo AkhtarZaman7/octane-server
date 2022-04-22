@@ -14,6 +14,7 @@ import notificationController from "./src/controllers/notifications.js";
 import {firebaseConfig} from './src/firebase/config.js';
 import { initializeApp } from 'firebase-admin/app';
 import admin from 'firebase-admin';
+import adminController from "./src/controllers/admin.js";
 initializeApp({
   credential: admin.credential.cert(firebaseConfig),
 });
@@ -97,6 +98,10 @@ app.post(
 app.post('/invite-users', authenticate, userController.inviteUsers);
 app.post('/user-invitation', userController.userInvitation);
 app.post('/delete-user', authenticate, userController.deleteUser);
+app.post('/summary', authenticate, adminController.summary);
+app.post('/team-summary', authenticate, adminController.teamLevelSummary);
+app.post('/system-summary', authenticate, adminController.systemLevelSummary);
+
 
 const PORT = process.env.PORT || 4000;
 (async () => {
