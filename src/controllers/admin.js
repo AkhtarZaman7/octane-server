@@ -37,7 +37,7 @@ const adminController = {
       const teams = await Team.find();
       const summary = teams.map(async (team) => {
         const games = await ScheduledGames.find({
-          team: team._id.toString(),
+          teamId: team._id.toString(),
         });
         const announcements = await Announcement.find({
           teamId: team._id.toString(),
