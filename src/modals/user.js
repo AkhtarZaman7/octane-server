@@ -67,6 +67,9 @@ const userSchema = new mongoose.Schema(
     },
     firebaseToken:{
       type: String,
+    },
+    lastActivity:{
+      type: String,
     }
   },
   {

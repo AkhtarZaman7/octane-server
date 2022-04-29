@@ -2,6 +2,7 @@ import { sendPushNotification } from "../firebase/index.js";
 import ScheduledGamesSchema from '../joi-schemas/scheduled-games.js';
 import Notification from '../modals/notifications.js';
 import ScheduledGames from '../modals/scheduled-games.js';
+import { updateUserLastActivity } from "./user-controller.js";
 
 const ScheduleGamesController = {
   scheduleGame: async function (req, res) {
@@ -11,6 +12,8 @@ const ScheduleGamesController = {
         'A new event has been scheduled',
         reqUser.teamId.toString()
       );
+      updateUserLastActivity(reqUser._id);
+
       const game = req.body;
       const gameValues = {
         ...game,
@@ -46,6 +49,7 @@ const ScheduleGamesController = {
   editGame: async function (req, res) {
     try {
       const reqUser = req.user;
+      updateUserLastActivity(reqUser._id);
 
       const game = req.body;
       const {  location,
@@ -91,6 +95,8 @@ const ScheduleGamesController = {
   getGames: async function (req, res) {
     try {
       const reqUser = req.user;
+      updateUserLastActivity(reqUser._id);
+
       const games = await ScheduledGames.find({ teamId: reqUser.teamId });
       const sortedGames = games.sort(function (a, b) {
         return new Date(b.date) - new Date(a.date);
@@ -111,6 +117,8 @@ const ScheduleGamesController = {
   UpdateGameStatus: async function (req, res) {
     try {
       const reqUser = req.user;
+      updateUserLastActivity(reqUser._id);
+
       const gameId = req.body.gameId.toString();
       const gameStatus = req.body.gameStatus;
       const game = await ScheduledGames.findOne({
@@ -157,6 +165,8 @@ const ScheduleGamesController = {
   updateGameUsers: async function (req, res) {
     try {
       const reqUser = req.user;
+      updateUserLastActivity(reqUser._id);
+
       const gameId = req.body.gameId.toString();
       const gameUsers = req.body.gameUsers;
       const game = await ScheduledGames.findOne({

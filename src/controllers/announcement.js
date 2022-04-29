@@ -2,10 +2,12 @@ import { sendPushNotification } from '../firebase/index.js';
 import AnnouncementSchema from '../joi-schemas/announcement.js';
 import Announcement from '../modals/announcement.js';
 import Notification from '../modals/notifications.js';
+import { updateUserLastActivity } from "./user-controller.js";
 
 const AnnouncementController = {
   createAnnouncement: async function (req, res) {
     const reqUser = req.user;
+    updateUserLastActivity(reqUser._id);
     sendPushNotification(
       'A new Announcement has been posted',
       reqUser.teamId.toString()
@@ -43,6 +45,8 @@ const AnnouncementController = {
       const announcements = await Announcement.find({
         teamId: reqUser.teamId.toString(),
       });
+      updateUserLastActivity(reqUser._id);
+
       res.json({
         message: 'Announcements retrieved successfully',
         announcements,
@@ -60,6 +64,8 @@ const AnnouncementController = {
     try {
       const reqUser = req.user;
       const announcement = req.body;
+      updateUserLastActivity(reqUser._id);
+
       const validatedAnnouncement = await AnnouncementSchema.validateAsync({
         title: announcement.title,
         description: announcement.description,
@@ -97,6 +103,7 @@ const AnnouncementController = {
       const deletedAnnouncement = await Announcement.findByIdAndDelete(
         announcement._id.toString()
       );
+
       res.json({
         message: 'Announcement deleted successfully',
         announcement: deletedAnnouncement,
@@ -116,6 +123,7 @@ const AnnouncementController = {
       const notifications = await Notification.find({
         teamId: reqUser.teamId.toString(),
       });
+      updateUserLastActivity(reqUser._id);
       res.json({
         message: 'Notifications retrieved successfully',
         notifications,

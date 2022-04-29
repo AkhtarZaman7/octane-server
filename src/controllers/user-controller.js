@@ -30,6 +30,7 @@ const userController = {
       if (!user) {
         throw new Error('email or username is invalid');
       }
+      updateUserLastActivity(user._id);
       const team = await Team.findOne({ _id: user.teamId.toString() });
       const isMatch = await user.matchesPassword(req.body.password);
       if (!isMatch) {
@@ -61,6 +62,7 @@ const userController = {
         ...user,
         teamId: reqUser.teamId.toString(),
       });
+      updateUserLastActivity(user._id);
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
         validatedUser,
@@ -94,6 +96,7 @@ const userController = {
           teamId: teamId,
           role: 'coach',
           position: 'forward',
+          lastActivity: new Date(),
         });
         const accessTokenData = {
           userId: registeredUser._id,
@@ -119,6 +122,7 @@ const userController = {
           teamId: user.teamId,
           role: 'player',
           position: 'forward',
+          lastActivity: new Date(),
         });
         await Notification.create({
           userId: user?._id,
@@ -162,6 +166,7 @@ const userController = {
     const reqUser = req.user;
     const user = await User.findById(reqUser.userId.toString());
     const team = await Team.findById(user.teamId.toString());
+    updateUserLastActivity(user._id);
     const response = sendMail(
       'azcodes12@gmail.com',
       ` ${user.username} has invited you to join their team ${team.teamName}`
@@ -185,6 +190,8 @@ const userController = {
         success: false,
       });
     }
+    updateUserLastActivity(user._id);
+
     const code = uuid().slice(0, 6).toLocaleUpperCase();
     const response = sendMail(email, ` Password Reset Code : ${code}`);
     if (response) {
@@ -244,6 +251,8 @@ const userController = {
           token,
         });
       });
+      updateUserLastActivity(user._id);
+
       const registeredUsers = await Promise.all(validatedUsers);
       const responses = await registeredUsers.map(async (validatedUser) => {
         const existingUser = await User.findOne({ email: validatedUser.email });
@@ -352,8 +361,9 @@ const userController = {
   },
   sendChatNotification: async function (req, res) {
     try {
-      if(req.body.message && req.body.id){
-        const userToSend= await User.findById(req.body.id.toString());
+      if (req.body.message && req.body.id) {
+        const userToSend = await User.findById(req.body.id.toString());
+
         const response = sendPushChatNotification(
           req.body.message,
           userToSend.firebaseToken
@@ -362,13 +372,12 @@ const userController = {
           message: 'Notification sent successfully',
           success: true,
         });
-      }else{
+      } else {
         res.json({
           message: 'Notification failed',
           success: false,
         });
       }
-     
     } catch (error) {
       res.json({
         message: 'Notification failed',
@@ -381,8 +390,8 @@ const userController = {
   sendTeamChat: async function (req, res) {
     try {
       const reqUser = req.user;
-      
       const users = await User.find({ teamId: reqUser.teamId.toString() });
+      
       const responses = await users.map(async (user) => {
         const response = sendPushChatNotification(
           req.body.message,
@@ -395,7 +404,6 @@ const userController = {
         message: 'Notification sent successfully',
         success: true,
       });
-     
     } catch (error) {
       res.json({
         message: 'Notification failed',
@@ -406,4 +414,19 @@ const userController = {
   },
 };
 
+const updateUserLastActivity = (userId) => {
+  User.findByIdAndUpdate(userId, {
+    lastActivity: new Date(),
+  })
+    .then(() => {
+      console.log(
+        `User ${userId} last activity updated ${new Date()}`
+      );
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 export default userController;
+export{updateUserLastActivity};
+
