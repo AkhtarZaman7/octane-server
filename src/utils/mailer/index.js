@@ -1,23 +1,23 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-import sgMail from '@sendgrid/mail';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
 dotenv.config();
 //TODO:// check if env variables are set
 async function sendMail(to, subject) {
   try {
     let transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: "Gmail",
       auth: {
-        user: 'azcodes12@gmail.com',
-        pass: '030280901002aA',
+        user: "azcodes12@gmail.com",
+        pass: "030280901002aA",
       },
     });
     let info = await transporter.sendMail({
-      from: 'azcodes12@gmail.com',
+      from: "azcodes12@gmail.com",
       to: [to],
       subject: subject,
-      text: 'Octane',
-      html: '<b>Octane Team?</b>',
+      text: "Octane",
+      html: "<b>Octane Team?</b>",
     });
     if (info.messageId) {
       return true;
@@ -30,32 +30,32 @@ async function sendMail(to, subject) {
 const sendInvitation = async (email, teamName, code) => {
   const msg = {
     to: email, // Change to your recipient
-    from: 'akhtar.tarar12@icloud.com', // Change to your verified sender
-    subject: 'Sending with SendGrid is Fun',
-    text: 'and easy to do anywhere, even with Node.js',
-    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    from: "akhtar.tarar12@icloud.com", // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    html: "<strong>and easy to do anywhere, even with Node.js</strong>",
   };
   sgMail
     .send(msg)
     .then(() => {
-      console.log('Email sent');
+      console.log("Email sent");
     })
     .catch((error) => {
       console.error(error);
     });
   try {
     let transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: "Gmail",
       auth: {
-        user: 'azcodes12@gmail.com',
-        pass: '030280901002aA',
+        user: "azcodes12@gmail.com",
+        pass: "030280901002aA",
       },
     });
     let info = await transporter.sendMail({
-      from: 'azcodes12@gmail.com',
+      from: "azcodes12@gmail.com",
       to: [email],
-      subject: 'You have been invited to join a team',
-      text: 'Octane',
+      subject: "You have been invited to join a team",
+      text: "Octane",
       html: `  <div style="border:30px solid #07243e; padding: 5%">
       <p
         style="
@@ -198,13 +198,13 @@ const sendInvitation = async (email, teamName, code) => {
     
     </div>`,
     });
-    console.log('info', info);
+    console.log("info", info);
     if (info.messageId) {
       return true;
     }
     return false;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return false;
   }
 };

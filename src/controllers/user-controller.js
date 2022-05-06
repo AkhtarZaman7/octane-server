@@ -1,23 +1,23 @@
-import { generateAccessToken } from '../authorization/index.js';
-import TeamSchema from '../joi-schemas/team.js';
+import { generateAccessToken } from "../authorization/index.js";
+import TeamSchema from "../joi-schemas/team.js";
 import UserSchema, {
   loginSchema,
   passwordSchema,
   updateUserSchema,
-} from '../joi-schemas/user.js';
-import { default as bcrypt } from 'bcryptjs';
+} from "../joi-schemas/user.js";
+import { default as bcrypt } from "bcryptjs";
 
-import Team from '../modals/team.js';
-import User from '../modals/user.js';
-import sendMail, { sendInvitation } from '../utils/mailer/index.js';
-import { v4 as uuid } from 'uuid';
-import InviteUserSchema from '../joi-schemas/invite-users.js';
-import InviteUsers from '../modals/user-invitation.js';
-import Notification from '../modals/notifications.js';
+import Team from "../modals/team.js";
+import User from "../modals/user.js";
+import sendMail, { sendInvitation } from "../utils/mailer/index.js";
+import { v4 as uuid } from "uuid";
+import InviteUserSchema from "../joi-schemas/invite-users.js";
+import InviteUsers from "../modals/user-invitation.js";
+import Notification from "../modals/notifications.js";
 import {
   sendPushChatNotification,
   sendPushNotification,
-} from '../firebase/index.js';
+} from "../firebase/index.js";
 
 const userController = {
   login: async function (req, res) {
@@ -28,13 +28,13 @@ const userController = {
         user = await User.findOne({ username: req.body.email });
       }
       if (!user) {
-        throw new Error('email or username is invalid');
+        throw new Error("email or username is invalid");
       }
       updateUserLastActivity(user._id);
       const team = await Team.findOne({ _id: user.teamId.toString() });
       const isMatch = await user.matchesPassword(req.body.password);
       if (!isMatch) {
-        throw new Error('Incorrect password');
+        throw new Error("Incorrect password");
       }
       const accessTokenData = {
         userId: user._id,
@@ -45,10 +45,11 @@ const userController = {
       };
 
       const accessToken = generateAccessToken(accessTokenData);
+      // console.log(accessToken);
       res.json({ user: user, accessToken, success: true, team });
     } catch (error) {
       res.json({
-        message: 'Login failed',
+        message: "Login failed",
         error: error.message,
         success: false,
       });
@@ -69,13 +70,13 @@ const userController = {
         { new: true }
       );
       res.json({
-        message: 'User updated successfully',
+        message: "User updated successfully",
         user: updatedUser,
         success: true,
       });
     } catch (error) {
       res.json({
-        message: 'User update failed',
+        message: "User update failed",
         error: error.message,
         success: false,
       });
@@ -87,15 +88,15 @@ const userController = {
       let team = req.body.team;
       const userValues = await UserSchema.validateAsync(user);
 
-      if (user.role === 'coach') {
+      if (user.role === "coach") {
         const teamValues = await TeamSchema.validateAsync(team);
         const registeredTeam = await Team.create(teamValues);
         const teamId = registeredTeam._id;
         const registeredUser = await User.create({
           ...userValues,
           teamId: teamId,
-          role: 'coach',
-          position: 'forward',
+          role: "coach",
+          position: "forward",
           lastActivity: new Date(),
         });
         const accessTokenData = {
@@ -107,7 +108,7 @@ const userController = {
 
         const accessToken = generateAccessToken(accessTokenData);
         res.json({
-          message: 'User registered successfully',
+          message: "User registered successfully",
           user: registeredUser,
           team: registeredTeam,
           accessToken,
@@ -115,13 +116,13 @@ const userController = {
         });
       } else {
         if (!user.teamId.match(/^[0-9a-fA-F]{24}$/)) {
-          throw new Error('Team not found');
+          throw new Error("Team not found");
         }
         const registeredUser = await User.create({
           ...userValues,
           teamId: user.teamId,
-          role: 'player',
-          position: 'forward',
+          role: "player",
+          position: "forward",
           lastActivity: new Date(),
         });
         await Notification.create({
@@ -144,19 +145,19 @@ const userController = {
 
           const accessToken = generateAccessToken(accessTokenData);
           res.json({
-            message: 'User registered successfully',
+            message: "User registered successfully",
             user: registeredUser,
             team: team,
             accessToken,
             success: true,
           });
         } else {
-          throw new Error('Team not found');
+          throw new Error("Team not found");
         }
       }
     } catch (error) {
       res.json({
-        message: 'registration failed',
+        message: "registration failed",
         error: error.message,
         success: false,
       });
@@ -168,16 +169,16 @@ const userController = {
     const team = await Team.findById(user.teamId.toString());
     updateUserLastActivity(user._id);
     const response = sendMail(
-      'azcodes12@gmail.com',
+      "azcodes12@gmail.com",
       ` ${user.username} has invited you to join their team ${team.teamName}`
     );
     if (response) {
       res.json({
-        message: 'Invitation sent successfully',
+        message: "Invitation sent successfully",
       });
     } else {
       res.json({
-        message: 'Invitation failed',
+        message: "Invitation failed",
       });
     }
   },
@@ -186,7 +187,7 @@ const userController = {
     const user = await User.find({ email: email });
     if (user.length === 0) {
       res.json({
-        message: 'User not found',
+        message: "User not found",
         success: false,
       });
     }
@@ -196,13 +197,13 @@ const userController = {
     const response = sendMail(email, ` Password Reset Code : ${code}`);
     if (response) {
       res.json({
-        message: 'Check your email',
+        message: "Check your email",
         code: code,
         success: true,
       });
     } else {
       res.json({
-        message: 'Password Reset Failed failed',
+        message: "Password Reset Failed failed",
         success: false,
       });
     }
@@ -219,12 +220,12 @@ const userController = {
       );
       if (response) {
         res.json({
-          message: 'Password reset successfully',
+          message: "Password reset successfully",
           success: true,
         });
       } else {
         res.json({
-          message: 'Password reset failed',
+          message: "Password reset failed",
           success: false,
         });
       }
@@ -273,12 +274,12 @@ const userController = {
       });
       const successResponses = await Promise.all(responses);
       res.json({
-        message: 'Invitation sent successfully',
+        message: "Invitation sent successfully",
         success: true,
       });
     } catch (error) {
       res.json({
-        error: 'Invitation failed',
+        error: "Invitation failed",
         message: error.message,
         success: false,
       });
@@ -289,19 +290,19 @@ const userController = {
       const response = await InviteUsers.findOne({ token: req.body.code });
       if (response) {
         res.json({
-          message: 'Invitation sent successfully',
+          message: "Invitation sent successfully",
           users: response,
           success: true,
         });
       } else {
         res.json({
-          message: 'Invitation does not exist',
+          message: "Invitation does not exist",
           success: false,
         });
       }
     } catch (error) {
       res.json({
-        message: 'Invitation failed',
+        message: "Invitation failed",
         error: error.message,
         success: false,
       });
@@ -314,18 +315,18 @@ const userController = {
       });
       if (response) {
         res.json({
-          message: 'User deleted successfully',
+          message: "User deleted successfully",
           success: true,
         });
       } else {
         res.json({
-          message: 'User not found',
+          message: "User not found",
           success: false,
         });
       }
     } catch (error) {
       res.json({
-        message: 'User deletion failed',
+        message: "User deletion failed",
         error: error.message,
         success: false,
       });
@@ -342,18 +343,18 @@ const userController = {
       );
       if (response) {
         res.json({
-          message: 'Firebase token updated successfully',
+          message: "Firebase token updated successfully",
           success: true,
         });
       } else {
         res.json({
-          message: 'User not found',
+          message: "User not found",
           success: false,
         });
       }
     } catch (error) {
       res.json({
-        message: 'Firebase token update failed',
+        message: "Firebase token update failed",
         error: error.message,
         success: false,
       });
@@ -369,18 +370,18 @@ const userController = {
           userToSend.firebaseToken
         );
         res.json({
-          message: 'Notification sent successfully',
+          message: "Notification sent successfully",
           success: true,
         });
       } else {
         res.json({
-          message: 'Notification failed',
+          message: "Notification failed",
           success: false,
         });
       }
     } catch (error) {
       res.json({
-        message: 'Notification failed',
+        message: "Notification failed",
         error: error.message,
         success: false,
       });
@@ -391,7 +392,7 @@ const userController = {
     try {
       const reqUser = req.user;
       const users = await User.find({ teamId: reqUser.teamId.toString() });
-      
+
       const responses = await users.map(async (user) => {
         const response = sendPushChatNotification(
           req.body.message,
@@ -401,12 +402,12 @@ const userController = {
       });
       const successResponses = await Promise.all(responses);
       res.json({
-        message: 'Notification sent successfully',
+        message: "Notification sent successfully",
         success: true,
       });
     } catch (error) {
       res.json({
-        message: 'Notification failed',
+        message: "Notification failed",
         error: error.message,
         success: false,
       });
@@ -419,14 +420,11 @@ const updateUserLastActivity = (userId) => {
     lastActivity: new Date(),
   })
     .then(() => {
-      console.log(
-        `User ${userId} last activity updated ${new Date()}`
-      );
+      console.log(`User ${userId} last activity updated ${new Date()}`);
     })
     .catch((err) => {
       console.log(err);
     });
 };
 export default userController;
-export{updateUserLastActivity};
-
+export { updateUserLastActivity };
