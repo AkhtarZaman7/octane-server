@@ -1,8 +1,8 @@
-import { sendPushNotification } from "../firebase/index.js";
+import { sendPushNotification } from '../firebase/index.js';
 import ScheduledGamesSchema from '../joi-schemas/scheduled-games.js';
 import Notification from '../modals/notifications.js';
 import ScheduledGames from '../modals/scheduled-games.js';
-import { updateUserLastActivity } from "./user-controller.js";
+import { updateUserLastActivity } from './user-controller.js';
 
 const ScheduleGamesController = {
   scheduleGame: async function (req, res) {
@@ -52,14 +52,16 @@ const ScheduleGamesController = {
       updateUserLastActivity(reqUser._id);
 
       const game = req.body;
-      const {  location,
+      const {
+        location,
         locationAddress,
         opponent,
         time,
         date,
         timeZoneName,
         timeZoneOffset,
-        type} = game;
+        type,
+      } = game;
       const gameValues = {
         location,
         locationAddress,
@@ -98,9 +100,11 @@ const ScheduleGamesController = {
       updateUserLastActivity(reqUser._id);
 
       const games = await ScheduledGames.find({ teamId: reqUser.teamId });
-      const sortedGames = games.sort(function (a, b) {
-        return new Date(b.date) - new Date(a.date);
-      });
+      const sortedGames = games
+        .filter((a) => new Date(a.date) > new Date())
+        .sort(function (a, b) {
+          return new Date(b.date) - new Date(a.date);
+        });
       res.json({
         message: 'Games retrieved successfully',
         games: sortedGames,
@@ -133,9 +137,7 @@ const ScheduleGamesController = {
           } has been cancelled`,
         });
         sendPushNotification(
-          `A ${
-            game.type === 'Game' ? 'Game' : 'Practice'
-          } has been cancelled`,
+          `A ${game.type === 'Game' ? 'Game' : 'Practice'} has been cancelled`,
           reqUser.teamId.toString()
         );
       }
@@ -177,16 +179,16 @@ const ScheduleGamesController = {
           teamId: reqUser.teamId.toString(),
           message: `A Player has marked himself ${
             game.usersNotAttending.length < gameUsers.length
-              ? 'Available'
-              : 'Un available'
+              ? 'Un available'
+              : 'Available'
           } for a game`,
         });
 
         sendPushNotification(
           `A Player has marked himself ${
             game.usersNotAttending.length < gameUsers.length
-              ? 'Available'
-              : 'Un available'
+              ? 'Un available'
+              : 'Available'
           } for a game`,
           reqUser.teamId.toString()
         );
