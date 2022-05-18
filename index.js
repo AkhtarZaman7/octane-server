@@ -106,8 +106,7 @@ app.post('/system-summary', authenticate, adminController.systemLevelSummary);
 const PORT = process.env.PORT || 4000;
 (async () => {
   const url =
-    'mongodb+srv://octane:EYwngdDZ7QtvFB8@octane.mhi3o.mongodb.net/myFirstDatabase?retryWrites=true&w=majority' ||
-    'mongodb://127.0.0.1:27017/octane';
+    'mongodb+srv://octane:octane@cluster0.n7hsl.mongodb.net/?retryWrites=true&w=majority';
   // const url = 'mongodb://127.0.0.1:27017/octane';
 
   try {
