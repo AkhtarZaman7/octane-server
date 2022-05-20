@@ -185,7 +185,7 @@ const ScheduleGamesController = {
           teamId: reqUser.teamId.toString(),
           message: `A Player has marked himself ${
             game.usersNotAttending.length < gameUsers.length
-              ? 'Un available'
+              ? 'Unavailable'
               : 'Available'
           } for a game`,
         });
@@ -193,7 +193,7 @@ const ScheduleGamesController = {
         sendPushNotification(
           `A Player has marked himself ${
             game.usersNotAttending.length < gameUsers.length
-              ? 'Un available'
+              ? 'Unavailable'
               : 'Available'
           } for a game`,
           reqUser.teamId.toString()
