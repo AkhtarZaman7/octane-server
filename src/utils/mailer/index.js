@@ -8,12 +8,15 @@ async function sendMail(to, subject) {
     let transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: "azcodes12@gmail.com",
-        pass: "030280901002aA",
+        // user: "azcodes12@gmail.com",
+        // pass: "030280901002aA",
+        user: "no-reply@octanetech.ca",
+        pass: "Italy9921!",
       },
     });
     let info = await transporter.sendMail({
-      from: "azcodes12@gmail.com",
+      from: "no-reply@octanetech.ca",
+      //from: "azcodes12@gmail.com",
       to: [to],
       subject: subject,
       text: "Octane",
@@ -55,8 +58,8 @@ const sendInvitation = async (email, teamName, code) => {
     });
     let info = await transporter.sendMail({
       from: "no-reply@octanetech.ca",
-      to: "ahmed.shafique94@gmail.com",
-      //to: [email],
+      //to: "ahmed.shafique94@gmail.com",
+      to: [email],
       subject: "You have been invited to join a team",
       text: "Octane",
       html: ` <div style="border:30px solid #07243e; padding: 5%;">
