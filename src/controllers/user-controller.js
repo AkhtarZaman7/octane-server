@@ -186,7 +186,7 @@ const userController = {
     const email = req.body.email;
     const user = await User.find({ email: email });
     if (user.length === 0) {
-      res.json({
+      return res.json({
         message: "User not found",
         success: false,
       });
@@ -195,14 +195,15 @@ const userController = {
 
     const code = uuid().slice(0, 6).toLocaleUpperCase();
     const response = sendMail(email, ` Password Reset Code : ${code}`);
+    console.log(response);
     if (response) {
-      res.json({
+      return res.json({
         message: "Check your email",
         code: code,
         success: true,
       });
     } else {
-      res.json({
+      return res.json({
         message: "Password Reset Failed failed",
         success: false,
       });
