@@ -65,7 +65,7 @@ const updateUserSchema = Joi.object({
   jerseyNumber: Joi.string().allow(''),
   shoots: Joi.string().allow(''),
   position: Joi.string().allow(''),
-  weight: Joi.number().allow(null),
+  weight: Joi.number().allow(null).allow('').allow(0),
   height: Joi.string().allow(null),
   birthDate: Joi.string().allow(''),
   homeTown: Joi.string().allow(''),

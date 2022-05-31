@@ -101,12 +101,6 @@ const ScheduleGamesController = {
 
       const games = await ScheduledGames.find({ teamId: reqUser.teamId });
       const sortedGames = games
-        .filter((a) => {
-          if (new Date(a.date) >= new Date()) {
-            return true;
-          }
-          return false;
-        })
         .sort(function (a, b) {
           return new Date(b.date) - new Date(a.date);
         });
