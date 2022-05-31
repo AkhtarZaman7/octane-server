@@ -144,6 +144,7 @@ const userController = {
           };
 
           const accessToken = generateAccessToken(accessTokenData);
+          InviteUsers.findOneAndRemove({ email: registeredUser.mail.toString() })
           res.json({
             message: "User registered successfully",
             user: registeredUser,
