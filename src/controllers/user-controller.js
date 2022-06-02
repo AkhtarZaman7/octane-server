@@ -87,11 +87,15 @@ const userController = {
       const user = req.body.user;
       let team = req.body.team;
       const userValues = await UserSchema.validateAsync(user);
-
       if (user.role === "coach") {
         const teamValues = await TeamSchema.validateAsync(team);
         const registeredTeam = await Team.create(teamValues);
         const teamId = registeredTeam._id;
+        const userAlreadyExists = await User.findOne({email: user.email});
+        if(userAlreadyExists){
+          await Team.findByIdAndRemove(teamId);
+          throw new Error("User with this name or email already exists");
+        }
         const registeredUser = await User.create({
           ...userValues,
           teamId: teamId,
@@ -144,7 +148,7 @@ const userController = {
           };
 
           const accessToken = generateAccessToken(accessTokenData);
-          InviteUsers.findOneAndRemove({ email: registeredUser.mail.toString() })
+          await InviteUsers.findOneAndRemove({ email: registeredUser.email.toString() })
           res.json({
             message: "User registered successfully",
             user: registeredUser,

@@ -141,19 +141,13 @@ const sendInvitation = async (email, teamName, code) => {
   try {
     let transporter = nodemailer.createTransport({
       host: "smtp.ionos.com",
-      //service: "Gmail",
-
       auth: {
-        //  user: "ahmed.shafique94@gmail.com",
-        //  pass: "vgxipmugsrxgmmnr",
         user: "no-reply@octanetech.ca",
         pass: "Italy9921!",
       },
     });
     let info = await transporter.sendMail({
       from: "no-reply@octanetech.ca",
-      //from: "ahmed.shafique94@gmail.com",
-      //to: ["ahmed.shafique94@gmail.com"],
       to: [email],
       subject: "You have been invited to join a team",
       text: "Octane",
