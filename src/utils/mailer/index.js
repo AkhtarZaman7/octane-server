@@ -12,7 +12,7 @@ async function sendMail(to, subject) {
         // user: "azcodes12@gmail.com",
         // pass: "030280901002aA",
         user: "no-reply@octanetech.ca",
-        pass: "Italy9921!",
+        pass: "Ivey9921!",
       },
     });
     let info = await transporter.sendMail({
@@ -143,7 +143,7 @@ const sendInvitation = async (email, teamName, code) => {
       host: "smtp.ionos.com",
       auth: {
         user: "no-reply@octanetech.ca",
-        pass: "Italy9921!",
+        pass: "Ivey9921!",
       },
     });
     let info = await transporter.sendMail({
