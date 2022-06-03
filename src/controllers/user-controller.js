@@ -170,12 +170,12 @@ const userController = {
   },
   invite: async function (req, res) {
     const reqUser = req.user;
-    const user = await User.findById(reqUser.userId.toString());
-    const team = await Team.findById(user.teamId.toString());
+    const user = await User.findById(reqUser?.userId?.toString());
+    const team = await Team.findById(user?.teamId?.toString());
     updateUserLastActivity(user._id);
     const response = sendMail(
       "azcodes12@gmail.com",
-      ` ${user.username} has invited you to join their team ${team.teamName}`
+      ` ${user?.username} has invited you to join their team ${team?.teamName}`
     );
     if (response) {
       res.json({
