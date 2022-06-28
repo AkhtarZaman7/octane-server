@@ -45,6 +45,8 @@ app.post('/send-team-chat', authenticate, userController.sendTeamChat);
 
 
 app.post('/team', authenticate, teamController.getTeam);
+app.post('/team-exists', teamController.teamExists);
+
 app.post('/team-info', authenticate, teamController.getTeamInfo);
 app.post('/update-team-info', authenticate, teamController.updateTeamInfo);
 
